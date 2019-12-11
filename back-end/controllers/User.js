@@ -1,46 +1,135 @@
 const userModel = require("../models/User");
 
-const read = async (req, res, next) => {
-  try {
-    let user = await userModel.read();
-    return res.status(200).json({
-      status: "success",
-      error: false,
-      data: user
-    });
-  } catch (error) {
-    return res.status(400).json({
-      status: "error",
-      error: true,
-      message: error.message
-    });
-  }
-};
-
-const insert = async (req, res, next) => {
-  const data = req.body;
-  try {
-    let userInsert = await userModel.insert(data);
-    if (userInsert == data) {
-      return res.status(201).json({
+const userController = {
+  getAllUsers: async (req, res, next) => {
+    try {
+      let user = await userModel.getAllUsers();
+      return res.status(200).json({
         status: "success",
         error: false,
-        data: userInsert
+        data: user
       });
-    } else {
-      return res.status(403).json({
+    } catch (error) {
+      return res.status(400).json({
         status: "error",
         error: true,
-        message: userInsert.message
+        message: error.message
       });
     }
-  } catch (error) {
-    return res.status(400).json({
-      status: "error",
-      error: true,
-      message: error.message
-    });
+  },
+  getUserByUsername: async (req, res, next) => {
+    let username = req.params.username;
+    try {
+      let user = await userModel.getUserByUsername(username);
+      return res.status(200).json({
+        status: "success",
+        error: false,
+        data: user
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: "error",
+        error: true,
+        message: error.message
+      });
+    }
+  },
+  insertUser: async (req, res, next) => {
+    const data = req.body;
+    try {
+      let isUsernameUnique =
+        (await userModel.getUserByUsername(data.username)).length == 0
+        ? true
+        : false;
+        
+      // Jika username tidak unique
+      if (isUsernameUnique == false) {
+        return res.status(403).json({
+          status: "success",
+          error: false,
+          message: "Username telah digunakan oleh orang lain"
+        });
+      }
+
+      let userInsert = await userModel.insertUser(data);
+      if (userInsert == data) {
+        return res.status(201).json({
+          status: "success",
+          error: false,
+          message: "Data user berhasil dimasukkan",
+          data: userInsert
+        });
+      } else {
+        return res.status(403).json({
+          status: "error",
+          error: true,
+          message: userInsert.message
+        });
+      }
+    } catch (error) {
+      return res.status(400).json({
+        status: "error",
+        error: true,
+        message: error.message
+      });
+    }
+  },
+  updateUser: async (req, res, next) => {
+    let id = req.params.id;
+    let data = req.body;
+    try {
+      let isUsernameUnique =
+        (await userModel.getUserByUsername(data.username, id)).length == 0
+          ? true
+          : false;
+
+      // Jika username tidak unique
+      if (isUsernameUnique == false) {
+        return res.status(403).json({
+          status: "success",
+          error: false,
+          message: "Username telah digunakan oleh orang lain"
+        });
+      }
+
+      let userUpdate = await userModel.updateUser(id, data);
+      if (userUpdate == data) {
+        return res.status(201).json({
+          status: "success",
+          error: false,
+          message: "Data user berhasil diupdate",
+          data: userUpdate
+        });
+      } else {
+        return res.status(403).json({
+          status: "error",
+          error: true,
+          message: userUpdate.message
+        });
+      }
+    } catch (error) {
+      return res.status(400).json({
+        status: "error",
+        error: true,
+        message: error.message
+      });
+    }
+  },
+  deleteUser: async (req, res, next) => {
+    let id = req.params.id
+    try {
+      let userDeleted = await userModel.deleteUser(id)
+      if(userDeleted == id){
+        return res.status(204).json({});
+      }
+    } catch (error) {
+      return res.status(400).json({
+        status: "error",
+        error: true,
+        message: error.message
+      });
+    }
   }
 };
 
-module.exports = { read, insert };
+module.exports = userController;

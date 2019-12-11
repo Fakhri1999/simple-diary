@@ -14,11 +14,11 @@ A simple diary apps for filling my spare time. This apps divided into 2 part, ba
 - Back-end
   - [x] Prepare the file needed to built the apps
   - [x] Database created
-  - [ ] Read user
+  - [x] Read user
     - [x] Read all user
-    - [ ] Read single user
+    - [x] Read single user by username
   - [x] Create user
     - [x] Check username must be unique
-  - [ ] Update, delete user
+  - [x] Update, delete user
   - [ ] Create, read diary
   - [ ] Update, delete diary
