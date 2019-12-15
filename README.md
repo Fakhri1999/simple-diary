@@ -25,4 +25,4 @@ A simple diary apps for filling my spare time. This apps divided into 2 part, ba
   - [x] Read diary
     - [x] Read all diary by userId
     - [x] Read single diary by userId & diaryId
-  - [ ] Update, delete diary
+  - [x] Update, delete diary
