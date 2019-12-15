@@ -39,9 +39,9 @@ const userController = {
     try {
       let isUsernameUnique =
         (await userModel.getUserByUsername(data.username)).length == 0
-        ? true
-        : false;
-        
+          ? true
+          : false;
+
       // Jika username tidak unique
       if (isUsernameUnique == false) {
         return res.status(403).json({
@@ -116,10 +116,10 @@ const userController = {
     }
   },
   deleteUser: async (req, res, next) => {
-    let id = req.params.id
+    let id = req.params.id;
     try {
-      let userDeleted = await userModel.deleteUser(id)
-      if(userDeleted == id){
+      let userDeleted = await userModel.deleteUser(id);
+      if (userDeleted == id) {
         return res.status(204).json({});
       }
     } catch (error) {

@@ -20,5 +20,9 @@ A simple diary apps for filling my spare time. This apps divided into 2 part, ba
   - [x] Create user
     - [x] Check username must be unique
   - [x] Update, delete user
-  - [ ] Create, read diary
+  - [x] Create diary
+    - [x] Cek autentikasi user
+  - [x] Read diary
+    - [x] Read all diary by userId
+    - [x] Read single diary by userId & diaryId
   - [ ] Update, delete diary
