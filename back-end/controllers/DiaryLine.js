@@ -1,10 +1,11 @@
-const diaryModel = require("../models/Diary");
-const diaryHelper = require("../helpers/DiaryHelper")
+const diaryLineModel = require("../models/DiaryLine");
+const userLineModel = require("../models/UserLine");
+const diaryLineHelper = require("../helpers/DiaryLineHelper")
 const diaryController = {
-  getAllDiaryByUserId: async (req, res, next) => {
-    let userId = req.params.userId;
+  getAllDiaryByLineUserId: async (req, res, next) => {
+    let line_u_id = req.params.line_u_id;
     try {
-      let diary = await diaryModel.getAllDiaryByUserId(userId);
+      let diary = await diaryLineModel.getAllDiaryByLineUserId(line_u_id);
       return res.status(200).json({
         status: "success",
         error: false,
@@ -22,7 +23,7 @@ const diaryController = {
     let userId = req.params.userId;
     let diaryId = req.params.diaryId;
     try {
-      let diary = await diaryModel.getSingleDiaryByUserId(userId, diaryId);
+      let diary = await diaryLineModel.getSingleDiaryByUserId(userId, diaryId);
       return res.status(200).json({
         status: "success",
         error: false,
@@ -37,23 +38,10 @@ const diaryController = {
     }
   },
   insertDiary: async (req, res, next) => {
-    let { username, password } = req.body;
-    let diaryData = req.body.diaryData;
+    let diaryData = req.body;
     try {
-      let where = {
-        username,
-        password,
-        id: diaryData.id_user
-      };
-      let checkAuth = (await diaryModel.checkAuth(where)).length > 0;
-      if (!checkAuth) {
-        return res.status(403).json({
-          status: "error",
-          error: true,
-          message: "Akses ditolak"
-        });
-      }
-      let diaryInsert = await diaryModel.insertDiary(diaryHelper.insertConfig(diaryData));
+      let user = await userLineModel.getUserByLineUserId(diaryData.line_u_id)
+      let diaryInsert = await diaryLineModel.insertDiary(diaryLineHelper.insertConfig(diaryData, user[0].id));
       if (diaryInsert == true) {
         return res.status(201).json({
           status: "success",
@@ -63,6 +51,7 @@ const diaryController = {
         });
       }
     } catch (error) {
+      console.log(error)
       return res.status(400).json({
         status: "error",
         error: true,
@@ -71,17 +60,12 @@ const diaryController = {
     }
   },
   updateDiary: async (req, res, next) => {
-    let diaryId = req.body.id_diary;
-    let { username, password } = req.body;
+    let diaryId = req.body.diaryId;
+    let line_u_id = req.body.line_u_id;
     let diaryData = req.body.diaryData;
 
     try {
-      let where = {
-        username,
-        password,
-        id: diaryData.id_user
-      };
-      let checkAuth = (await diaryModel.checkAuth(where)).length > 0;
+      let checkAuth = (await diaryLineModel.getSingleDiaryByLineUserId(line_u_id, diaryId)).length > 0;
       if (!checkAuth) {
         return res.status(403).json({
           status: "error",
@@ -89,7 +73,7 @@ const diaryController = {
           message: "Akses ditolak"
         });
       }
-      let diaryUpdate = await diaryModel.updateDiary(diaryHelper.updateConfig(diaryData), diaryId);
+      let diaryUpdate = await diaryLineModel.updateDiary(diaryLineHelper.updateConfig(diaryData), diaryId);
       if (diaryUpdate == true) {
         return res.status(201).json({
           status: "success",
@@ -107,15 +91,10 @@ const diaryController = {
     }
   },
   deleteDiary: async (req, res, next) => {
-    let diaryId = req.body.id_diary;
-    let { username, password, diaryData } = req.body;
+    let diaryId = req.body.diaryId;
+    let line_u_id = req.body.line_u_id;
     try {
-      let where = {
-        username,
-        password,
-        id: diaryData.id_user
-      };
-      let checkAuth = (await diaryModel.checkAuth(where)).length > 0;
+      let checkAuth = (await diaryLineModel.getSingleDiaryByLineUserId(line_u_id, diaryId)).length > 0;
       if (!checkAuth) {
         return res.status(403).json({
           status: "error",
@@ -123,7 +102,7 @@ const diaryController = {
           message: "Akses ditolak"
         });
       }
-      let diaryDeleted = await diaryModel.deleteDiary(diaryId);
+      let diaryDeleted = await diaryLineModel.deleteDiary(diaryId);
       if (diaryDeleted == diaryId) {
         return res.status(204).json({});
       }

@@ -1,5 +1,5 @@
 const userModel = require("../models/User");
-
+const userHelper = require("../helpers/UserHelper")
 const userController = {
   getAllUsers: async (req, res, next) => {
     try {
@@ -21,6 +21,9 @@ const userController = {
     let username = req.params.username;
     try {
       let user = await userModel.getUserByUsername(username);
+      if(user == ""){
+        user = null
+      } 
       return res.status(200).json({
         status: "success",
         error: false,
@@ -51,13 +54,13 @@ const userController = {
         });
       }
 
-      let userInsert = await userModel.insertUser(data);
-      if (userInsert == data) {
+      let userInsert = await userModel.insertUser(userHelper.insertConfig(data));
+      if (userInsert) {
         return res.status(201).json({
           status: "success",
           error: false,
           message: "Data user berhasil dimasukkan",
-          data: userInsert
+          data: data
         });
       } else {
         return res.status(403).json({
@@ -78,8 +81,7 @@ const userController = {
     let id = req.params.id;
     let data = req.body;
     try {
-      let isUsernameUnique =
-        (await userModel.getUserByUsername(data.username, id)).length == 0
+      let isUsernameUnique = (await userModel.getUserByUsername(data.username, id)).length == 0
           ? true
           : false;
 
@@ -92,13 +94,13 @@ const userController = {
         });
       }
 
-      let userUpdate = await userModel.updateUser(id, data);
-      if (userUpdate == data) {
+      let userUpdate = await userModel.updateUser(id, userHelper.updateConfig(data));
+      if (userUpdate) {
         return res.status(201).json({
           status: "success",
           error: false,
           message: "Data user berhasil diupdate",
-          data: userUpdate
+          data: data
         });
       } else {
         return res.status(403).json({
@@ -131,5 +133,4 @@ const userController = {
     }
   }
 };
-
 module.exports = userController;

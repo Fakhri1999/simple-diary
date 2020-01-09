@@ -5,9 +5,9 @@ const userModel = {
   
   getUserByUsername : async (username, id = null) => await id == null ? db("user").where("username", `${username}`) : db('user').where('username', username).whereNot('id', id),
   
-  insertUser : async data => await db("user").insert(data).then(result => data),
+  insertUser : async data => await db("user").insert(data).then(result => true),
 
-  updateUser : async (id, data) => await db("user").where('id', id).update(data).then(result => data),
+  updateUser : async (id, data) => await db("user").where('id', id).update(data).then(result => true),
 
   deleteUser : async id => await db('user').where('id', id).del().then(result => id)
 }
